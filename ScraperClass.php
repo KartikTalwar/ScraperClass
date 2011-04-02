@@ -237,31 +237,31 @@ class Scraper
 	*/
 	public function cache($data, $key)
 	{
-		 if ( !is_dir($this->dir) OR !is_writable($this->dir))  
-         {  
+		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
+		{  
 			return FALSE;  
-         }  
-  
-        $cache_path = md5($key);  
-  
-        if ( !$fp = fopen($cache_path, 'wb'))  
-        {  
-            return FALSE;  
-        }  
-  
-        if (flock($fp, LOCK_EX))  
-        {  
-            fwrite($fp, serialize($data));  
-            flock($fp, LOCK_UN);  
-        }  
-        else  
-        {  
-            return FALSE;  
-        }  
-		
-        fclose($fp);  
-        @chmod($cache_path, 0777);  
-        
+		}  
+
+		$cache_path = md5($key);  
+
+		if ( !$fp = fopen($cache_path, 'wb'))  
+		{  
+			return FALSE;  
+		}  
+
+		if (flock($fp, LOCK_EX))  
+		{  
+			fwrite($fp, serialize($data));  
+			flock($fp, LOCK_UN);  
+		}  
+		else  
+		{  
+			return FALSE;  
+		}  
+
+		fclose($fp);  
+		@chmod($cache_path, 0777);  
+
 		return TRUE;  
 		
 	}
