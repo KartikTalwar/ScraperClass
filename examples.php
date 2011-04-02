@@ -24,7 +24,7 @@ $externalcss = $scraper->externalcss($link);
 
 $externaljs = $scraper->externaljs($link);
 
-$externaljs = $scraper->replace("pm", "PM", $load);
+$replace = $scraper->replace("pm", "PM", $load);
 
 $cache = $scraper->cache($load, "blahblah123");
 $getcache = $scraper->getcache("blahblah123");
