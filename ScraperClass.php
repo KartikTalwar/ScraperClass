@@ -208,6 +208,22 @@ class Scraper
 	*/	
 	
 	
+	/*
+	Replace content
+	@param: What to replace, What to replace it with, Where the content is
+	@output: returns the string with the replacements
+	*/
+	public function replace($what, $with, $from)
+	{
+		if($what  != "" && $with != "")
+		{
+			return str_replace($what, $with, $from);
+		}
+	
+	}
+	
+	
+	
 }
 
 
