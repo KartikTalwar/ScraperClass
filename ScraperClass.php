@@ -7,6 +7,10 @@ class Scraper
 {
 
 	
+	public $dir = "./cache";
+	public $expiration = 3600;
+	
+	
 	
 	/*
 	Constructor
@@ -220,6 +224,104 @@ class Scraper
 			return str_replace($what, $with, $from);
 		}
 	
+	}
+	
+	
+	
+	
+	
+	/*
+	Caches content
+	@param: Data to be cached, name of the cache file
+	@output: none
+	*/
+	public function cache($data, $key)
+	{
+		 if ( !is_dir($this->dir) OR !is_writable($this->dir))  
+         {  
+			return FALSE;  
+         }  
+  
+        $cache_path = md5($key);  
+  
+        if ( !$fp = fopen($cache_path, 'wb'))  
+        {  
+            return FALSE;  
+        }  
+  
+        if (flock($fp, LOCK_EX))  
+        {  
+            fwrite($fp, serialize($data));  
+            flock($fp, LOCK_UN);  
+        }  
+        else  
+        {  
+            return FALSE;  
+        }  
+		
+        fclose($fp);  
+        @chmod($cache_path, 0777);  
+        
+		return TRUE;  
+		
+	}
+	
+
+
+	/*
+	Retrieves the cache file
+	@param: name of cache file to be retrieved
+	@output: cache file content
+	*/
+	public function getcache($key)
+	{
+		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
+		{  
+			return FALSE;  
+		}  
+
+		$cache_path = md5($key);  
+
+		if (!@file_exists($cache_path))  
+		{  
+			return FALSE;  
+		}  
+
+		if (filemtime($cache_path) < (time() - $this->expiration))  
+		{  
+			
+			if (file_exists($cache_path))  
+			{  
+				unlink($cache_path);  
+				
+				return TRUE;  
+			}  
+			
+			return FALSE;  
+		}  
+
+		if (!$fp = @fopen($cache_path, 'rb'))  
+		{  
+			return FALSE;  
+		}  
+
+		flock($fp, LOCK_SH);  
+
+		$cache = '';  
+
+		if (filesize($cache_path) > 0)  
+		{  
+			$cache = unserialize(fread($fp, filesize($cache_path)));  
+		}  
+		else  
+		{  
+			$cache = NULL;  
+		}  
+
+		flock($fp, LOCK_UN);  
+		fclose($fp);  
+
+		return $cache;  	
 	}
 	
 	
