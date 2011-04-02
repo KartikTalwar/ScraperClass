@@ -4,12 +4,11 @@
 include "ScraperClass.php";
 
 
-
+$link = "http://www.bulletin.uwaterloo.ca/";
 
 $scraper = new Scraper;
 
 
-$link = "http://www.bulletin.uwaterloo.ca/";
 
 $load = $scraper->load($link);
 
