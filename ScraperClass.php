@@ -9,18 +9,13 @@ class Scraper
 	
 	
 	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
+	Constructor
 	*/
 	function __construct()
 	{
 		return True;
 	}
 	/*
-	#########################
-	######   End Function  #####
-	#########################
 	*/	
 
 	
@@ -29,11 +24,13 @@ class Scraper
 	
 	
 	
-/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/	
+
+	
+	/*
+	Load Function
+	@param: URL to get the contents of
+	@output: Returns variable with the HTML content of the webpage
+	*/
 	public function load($url)
 	{
 		if(function_exists('file_get_contents'))
