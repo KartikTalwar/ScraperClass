@@ -24,12 +24,14 @@ $externalcss = $scraper->externalcss($link);
 
 $externaljs = $scraper->externaljs($link);
 
+$externaljs = $scraper->replace("pm", "PM", $load);
 
 
 
 
 
-print_r($externalcss);
+
+print_r($replace);
 
 
 
