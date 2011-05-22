@@ -15,7 +15,7 @@ class Scraper
 {
 
 	public $dir = "./cache";	// cache directory
-	public $expiration = 3600;	// cache expiration time in seconds
+	public $expiration = 60*60;	// cache expiration time in seconds
 	
 	
 	/**
@@ -49,7 +49,7 @@ class Scraper
 		{
 			return file_get_contents($url);	// return the contents
 		}
-		//, otherwise use curl
+		// otherwise use curl
 		elseif ( extension_loaded("curl_init") )
 		{
 			$ch = curl_init();
@@ -89,9 +89,9 @@ class Scraper
 	 */	
 	public function cut($start, $end, $from)
 	{
-		$cut =  explode($start, $from);	// cut from top
+		$cut =  explode($start, $from);		// cut from top
 		$cut =  explode($end, @$cut[1]);	// cut from bottom
-		$cut = $cut[0];	// get the cropped part
+		$cut = $cut[0];				// get the cropped part
 		
 		return $cut;	// output it
 	}
@@ -103,7 +103,8 @@ class Scraper
 	 * The following function removes all HTML code from the contents
 	 * and leaves the HTML and PHP comments alone
 	 *
-	 * @param	(string) $html The HTML contents to be stripped, $exceptions HTML tags to be excluded within quotes without separation
+	 * @param	(string) $html The HTML contents to be stripped, $exceptions HTML tags to be excluded
+	 * 			 within quotes without separation
 	 * @return	(string) $results The stripped text contents 
 	 */
 	public function strip($html, $exceptions)
@@ -162,18 +163,22 @@ class Scraper
 	 */
 	public function escape($html)
 	{
-		if( count($html) >1 )
+		// if multiple strings
+		if( is_array($html) )
 		{
-			
+			$results = array();
+			// start ittering
 			foreach($html as $entry)
 			{
-				return addslashes(htmlspecialchars($entry));
+				$results[] = htmlentities($entry);	// append escaped string
 			}
-
+			
+			return $results;	// output it
 		}
+		// otherwise
 		else
 		{
-			return addslashes(htmlspecialchars($html));			
+			return htmlentities($html);	// escape it
 		}
 	}
 
@@ -188,20 +193,23 @@ class Scraper
 	 */	
 	public function unescape($html)
 	{
-		if( count($html) >1 )
+		// if multiple strings
+		if( is_array($html) )
 		{
-			
+			$results = array();
+			// start ittering
 			foreach($html as $entry)
 			{
-				return stripslashes(htmlspecialchars_decode($entry));
+				$results[] = html_entity_decode($entry);	// append unescaped string
 			}
-
+			
+			return $results;	// output it
 		}
+		// otherwise
 		else
 		{
-			return stripslashes(htmlspecialchars_decode($html));
+			return html_entity_decode($html);	// unescape it
 		}
-		
 	}
 	
 
@@ -246,7 +254,8 @@ class Scraper
 	 *
 	 * The following function replaces the given text with the replacement text
 	 *
-	 * @param	(string, array) $what The string/array to be replaced, $with The string/array to replace with, $from The HTML contents
+	 * @param	(string, array) $what The string/array to be replaced, $with The string/array to 
+	 * 			 replace with, $from The HTML contents
 	 * @return	(string) The replaced HTML contents
 	 */
 	public function replace($what, $with, $from)
