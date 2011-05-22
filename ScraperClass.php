@@ -9,7 +9,7 @@
  * @author     	Kartik Talwar
  * @version    	1.0
  * @example	./examples.php
- * @link	http://github.com/kartiktalwar/PHP-Scraper-Class
+ * @link	http://github.com/kartiktalwar/Scraper-Class
  */
 class Scraper
 {
