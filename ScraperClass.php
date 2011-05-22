@@ -49,7 +49,7 @@ class Scraper
 		{
 			return file_get_contents($url);	// return the contents
 		}
-		// otherwise use curl
+		//, otherwise use curl
 		elseif ( extension_loaded("curl_init") )
 		{
 			$ch = curl_init();
@@ -89,11 +89,11 @@ class Scraper
 	 */	
 	public function cut($start, $end, $from)
 	{
-		$cut =  explode($start, $from);
-		$cut =  explode($end, @$cut[1]);
-		$cut = $cut[0];
+		$cut =  explode($start, $from);	// cut from top
+		$cut =  explode($end, @$cut[1]);	// cut from bottom
+		$cut = $cut[0];	// get the cropped part
 		
-		return $cut;
+		return $cut;	// output it
 	}
 
 
@@ -101,25 +101,53 @@ class Scraper
 	 * Strip Tags Function
 	 *
 	 * The following function removes all HTML code from the contents
+	 * and leaves the HTML and PHP comments alone
 	 *
-	 * @param	(string) $html The HTML contents to be stripped
+	 * @param	(string) $html The HTML contents to be stripped, $exceptions HTML tags to be excluded within quotes without separation
 	 * @return	(string) $results The stripped text contents 
 	 */
-	public function strip($html)
+	public function strip($html, $exceptions)
 	{
-		if( count($html) > 1  )
+		// if not single
+		if( is_array($html) )
 		{
-			$results = array();
+			$results = array();	// init the results
+			// start ittering
 			foreach($html as $single)
 			{
-				$results[] = strip_tags($single);
+				// replace php and comments tags so they do not get stripped  			
+				$single = preg_replace("@<\?@", "#?#", $single);
+				$single = preg_replace("@<!--@", "#!--#", $single);
+
+				// strip tags normally
+				# $single = preg_replace("/<[^>]*>/", "", $single);	// take care of double quotes
+				$single = strip_tags($single, $exceptions);
+
+				// return php and comments tags to their origial form
+				$single = preg_replace("@#\?#@", "<?", $single);
+				$single = preg_replace("@#!--#@", "<!--", $single);
+				
+				$results[] = $single;	// append the results	
 			}
 			
-			return $results;
+			return $results; // output multiple
 		}
+		// otherwise
 		else
 		{
-			return strip_tags($html);
+			// replace php and comments tags so they do not get stripped  
+			$html = preg_replace("@<\?@", "#?#", $html);
+			$html = preg_replace("@<!--@", "#!--#", $html);
+
+			// strip tags normally
+			# $single = preg_replace("/<[^>]*>/", "", $single);	// take care of double quotes
+			$html = strip_tags($html, $exceptions);
+
+			// return php and comments tags to their origial form
+			$html = preg_replace("@#\?#@", "<?", $html);
+			$html = preg_replace("@#!--#@", "<!--", $html);
+			
+			return $html;	// return stripped single
 		}
 	}
 
