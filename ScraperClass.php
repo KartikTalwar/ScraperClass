@@ -91,12 +91,35 @@ class Scraper
 	{
 		$cut =  explode($start, $from);		// cut from top
 		$cut =  explode($end, @$cut[1]);	// cut from bottom
-		$cut = $cut[0];				// get the cropped part
+		$cut =  $cut[0];				// get the cropped part
 		
 		return $cut;	// output it
 	}
+	
+	
+	/**
+	 * Cut Multiple Function
+	 *
+	 * The following function cuts out multiple portions from the HTML content
+	 *
+	 * @param	(array) $start The HTML tag to start, $end HTML tag to end, $from the HTML contents
+	 * @return	(array) $cut the extracted HTML contents
+	 */	
+	public function cutMultiple($start, $end, $from)
+	{
+		$count = count($start);	// count instances
+		$results = array();	// init the output
+		
+		// start ittering
+		for($i = 0; $i < $count; $i++)
+		{
+			$results[] = $this->cut($start[$i], $end[$i], $from);	// append the cut
+		}
+		
+		return $results;	// output it
+	}
 
-
+	
 	/**
 	 * Strip Tags Function
 	 *
@@ -255,7 +278,7 @@ class Scraper
 	 * The following function replaces the given text with the replacement text
 	 *
 	 * @param	(string, array) $what The string/array to be replaced, $with The string/array to 
-	 * 			 replace with, $from The HTML contents
+	 * 			        replace with, $from The HTML contents
 	 * @return	(string) The replaced HTML contents
 	 */
 	public function replace($what, $with, $from)
