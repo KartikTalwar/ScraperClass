@@ -1,40 +1,45 @@
 <?php
 
-error_reporting(E_ALL);
 
 
+/**
+ * The Scraper Class with helpful functions that are essential to data 
+ * mining and screen scraping.
+ *
+ * @author     	Kartik Talwar
+ * @version    	1.0
+ * @example		./examples.php
+ * @link				http://github.com/kartiktalwar/PHP-Scraper-Class
+ */
 class Scraper
 {
 
-	
-	public $dir = "./cache";
+	public $dir = "../cache";
 	public $expiration = 3600;
 	
 	
-	
-	/*
-	Constructor
-	*/
+	/**
+	 * Constructor
+	 *
+	 * The following function does nothing at the moment
+	 *
+	 * @param	(none) NONE
+	 * @return		(none) NONE
+	 */
 	function __construct()
 	{
 		return True;
 	}
-	/*
-	*/	
 
 	
-	
-	
-	
-	
-	
-
-	
-	/*
-	Load Function
-	@param: URL to get the contents of
-	@output: Returns variable with the HTML content of the webpage
-	*/
+	/**
+	 * Load Function
+	 *
+	 * The following function gets the contents of the webpage
+	 *
+	 * @param	(string) $url The URL of the page to load
+	 * @return		(string) $data The contents of the URL
+	 */
 	public function load($url)
 	{
 		if(function_exists('file_get_contents'))
@@ -64,114 +69,114 @@ class Scraper
 			}
 		}
 	}
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/	
 
-	
-	
-	
-	
-	
-	
 
-	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/	
+	/**
+	 * Cut
+	 *
+	 * The following function extracts the data between 2 tags
+	 *
+	 * @param	(string) $start The HTML tag to start, $end HTML tag to end, $from the HTML contents
+	 * @return		(string) $cut the extracted HTML contents
+	 */	
 	public function cut($start, $end, $from)
 	{
 		$cut =  explode($start, $from);
-		$cut =  explode($end, $cut[1]);
+		$cut =  explode($end, @$cut[1]);
 		$cut = $cut[0];
 		
 		return $cut;
 	}
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/
 
-	
-	
-	
-	
-	
-	
 
-	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/	
+	/**
+	 * Strip Tags Function
+	 *
+	 * The following function removes all HTML code from the contents
+	 *
+	 * @param	(string) $html The HTML contents to be stripped
+	 * @return		(string) $results The stripped text contents 
+	 */
 	public function strip($html)
 	{
-		return strip_tags($html);
+		if( count($html) > 1  )
+		{
+			$results = array();
+			foreach($html as $single)
+			{
+				$results[] = strip_tags($single);
+			}
+			
+			return $results;
+		}
+		else
+		{
+			return strip_tags($html);
+		}
 	}
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/
 
-	
-	
-	
-	
-	
-	
 
-	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/	
+	/**
+	 * Escape Function
+	 *
+	 * The following function escapes the given HTML
+	 *
+	 * @param	(string) $html The content to be escaped
+	 * @return		(string) Escaped HTML
+	 */
 	public function escape($html)
 	{
-		return addslashes(htmlspecialchars($html));
-	}
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/
+		if( count($html) >1 )
+		{
+			
+			foreach($html as $entry)
+			{
+				return addslashes(htmlspecialchars($entry));
+			}
 
-	
-	
-	
-	
-	
-	
-	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/
+		}
+		else
+		{
+			return addslashes(htmlspecialchars($html));			
+		}
+	}
+
+
+	/**
+	 * Un-Escape Function
+	 *
+	 * The following function unescapes the HTML content
+	 *
+	 * @param	(string) $html The escaped HTML contents
+	 * @return		(string) Unescaped HTML
+	 */	
 	public function unescape($html)
 	{
-		return stripslashes(htmlspecialchars_decode($html));
-	}
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/
+		if( count($html) >1 )
+		{
+			
+			foreach($html as $entry)
+			{
+				return stripslashes(htmlspecialchars_decode($entry));
+			}
 
+		}
+		else
+		{
+			return stripslashes(htmlspecialchars_decode($html));
+		}
+		
+	}
 	
-	
-	
-	
-	
-	
-	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/	
+
+	/**
+	 * Get External CSS Function
+	 *
+	 * The following function gets the URLs of CSS files from a page
+	 *
+	 * @param	(string) $url The URL of the page to get CSS from
+	 * @return		(array) $result The links to the CSS files
+	 */	
 	public function externalcss($url)
 	{
 		$tmp = preg_match_all('/(href=")(.*\.css)"/i', $this->load($url), $patterns);
@@ -180,23 +185,16 @@ class Scraper
 		
 		return $result;
 	}
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/		
-
 	
 	
-	
-	
-	
-	
-	/*
-	#########################
-	#####   Begin Function  #####
-	#########################
-	*/
+	/**
+	 * Get External JS Function
+	 *
+	 * The following function gets the URLs of JS files from a page
+	 *
+	 * @param	(string) $url The URL of the page to get JS from
+	 * @return		(array) $result The links to the JS files
+	 */
 	public function externaljs($url)
 	{
 		$tmp = preg_match_all('/(src=")(.*\.js)"/i', $this->load($url), $patterns);
@@ -205,21 +203,19 @@ class Scraper
 		
 		return $result;
 	}	
-	/*
-	#########################
-	######   End Function  #####
-	#########################
-	*/	
+
 	
-	
-	/*
-	Replace content
-	@param: What to replace, What to replace it with, Where the content is
-	@output: returns the string with the replacements
-	*/
+	/**
+	 * String Replacement Function
+	 *
+	 * The following function replaces the given text with the replacement text
+	 *
+	 * @param	(string, array) $what The string/array to be replaced, $with The string/array to replace with, $from The HTML contents
+	 * @return		(string) The replaced HTML contents
+	 */
 	public function replace($what, $with, $from)
 	{
-		if($what  != "" && $with != "")
+		if($what  != "")
 		{
 			return str_replace($what, $with, $from);
 		}
@@ -227,14 +223,32 @@ class Scraper
 	}
 	
 	
+	/**
+	 * XML Parser Function
+	 *
+	 * The following function parses then e XML into an object
+	 *
+	 * @param	(string) $url The URL of the XML content
+	 * @return		(array) The parsed XML array
+	 */
+	public function parseXML($url)
+	{
+		if(function_exists('simplexml_load_string'))
+		{
+			return simplexml_load_string($url);
+		}
 	
-	
-	
-	/*
-	Caches content
-	@param: Data to be cached, name of the cache file
-	@output: none
-	*/
+	}	
+
+
+	/**
+	 * Generate Cache Function
+	 *
+	 * The following function generates a cache file and stores it
+	 *
+	 * @param	(string) $data The data to be cached, $key An unique identifier for the data
+	 * @return		(bool) Returns True if data is cached
+	 */	
 	public function cache($data, $key)
 	{
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
@@ -266,13 +280,15 @@ class Scraper
 		
 	}
 	
-
-
-	/*
-	Retrieves the cache file
-	@param: name of cache file to be retrieved
-	@output: cache file content
-	*/
+	
+	/**
+	 * Get Cache Function
+	 *
+	 * The following function gets the cached content
+	 *
+	 * @param	(string) $key The unique key for the saved data
+	 * @return		(string) The cached content
+	 */
 	public function getcache($key)
 	{
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
@@ -325,8 +341,32 @@ class Scraper
 	}
 	
 	
+	/**
+	 * Get URLs Function
+	 *
+	 * The following function outputs all the links found in the given text
+	 *
+	 * @param	(string) $text The HTML content to extract links from
+	 * @return		(array) $urls The list of URLS found
+	 */
+	public function getURLs($text)
+	{
+		$pattern  = '#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#';
+		$match = preg_match_all($pattern, $text, $matches);
+		$results = $matches[0];
+		
+		$urls = array();
+		
+		foreach($results as $url)
+		{
+			$urls[] = $url;
+		}
+		
+		return $urls;
+	}
+
 	
-}
+}	// end class
 
 
 
