@@ -14,7 +14,7 @@
 class Scraper
 {
 
-	public $dir = "../cache";
+	public $dir = "./cache";
 	public $expiration = 3600;
 	
 	
@@ -72,7 +72,7 @@ class Scraper
 
 
 	/**
-	 * Cut
+	 * Cut Function
 	 *
 	 * The following function extracts the data between 2 tags
 	 *
