@@ -27,13 +27,14 @@ To Install the class, you simply need to add this code
 	
 1. Loading URL
 
-	<?php
+
+		<?php
 		
-		include "ScraperClass.php";
+			include "ScraperClass.php";
 		
-		$scraper = new Scraper();
-		$get = $scraper->load("http://yahoo.com/");
+			$scraper = new Scraper();
+			$get = $scraper->load("http://yahoo.com/");
 		
-		echo $get;
+			echo $get;
 		
-	?>
+		?>

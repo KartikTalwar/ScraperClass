@@ -14,8 +14,8 @@
 class Scraper
 {
 
-	public $dir = "./cache";
-	public $expiration = 3600;
+	public $dir = "./cache";	// cache directory
+	public $expiration = 3600;	// cache expiration time in seconds
 	
 	
 	/**
@@ -26,7 +26,7 @@ class Scraper
 	 * @param	(none) NONE
 	 * @return	(bool) Returns True
 	 */
-	function __construct()
+	public function __construct()
 	{
 		return True;
 	}
@@ -42,31 +42,39 @@ class Scraper
 	 */
 	public function load($url)
 	{
-		if(function_exists('file_get_contents'))
+		$url = $this->replace( array(' '), array('+'), $url );	// remove spaces
+		
+		// if file_get_contents exists use that
+		if( extension_loaded("file_get_contents") )
 		{
-			return file_get_contents("$url");
+			return file_get_contents($url);	// return the contents
 		}
+		// otherwise use curl
+		elseif ( extension_loaded("curl_init") )
+		{
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_URL, $url);	// get the url contents
+			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13');	// set user agent
+			curl_setopt($ch, CURLOPT_HEADER	, TRUE);
+			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+			curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+			curl_setopt($ch, CURLOPT_COOKIEFILE, './cache/cookie.txt');	// set cookie file
+			curl_setopt($ch, CURLOPT_COOKIEJAR, './cache/cookie.txt');
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
+			
+			$data = curl_exec($ch);	// execute curl request
+			curl_close($ch);
+			
+			return $data;	// return contents
+		}
+		// otherwise simply read the file
 		else
 		{
-			if( !function_exists('file_get_contents') && function_exists('curl_init'))
-			{
-				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($ch, CURLOPT_URL, $g);
-				curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13');
-				curl_setopt($ch, CURLOPT_HEADER	, TRUE);
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-				curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-				curl_setopt($ch, CURLOPT_COOKIEFILE, './cache/cookie.txt');
-				curl_setopt($ch, CURLOPT_COOKIEJAR, './cache/cookie.txt');
-				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
-				
-				$data = curl_exec($ch);
-				curl_close($ch);
-				
-				return $data;
-			}
+			$handle = fopen($url, "r+");	// simple read the file
+			
+			return $handle;	// output it
 		}
 	}
 
