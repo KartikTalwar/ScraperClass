@@ -8,8 +8,8 @@
  *
  * @author     	Kartik Talwar
  * @version    	1.0
- * @example		./examples.php
- * @link				http://github.com/kartiktalwar/PHP-Scraper-Class
+ * @example	./examples.php
+ * @link	http://github.com/kartiktalwar/PHP-Scraper-Class
  */
 class Scraper
 {
@@ -24,7 +24,7 @@ class Scraper
 	 * The following function does nothing at the moment
 	 *
 	 * @param	(none) NONE
-	 * @return		(none) NONE
+	 * @return	(bool) Returns True
 	 */
 	function __construct()
 	{
@@ -38,7 +38,7 @@ class Scraper
 	 * The following function gets the contents of the webpage
 	 *
 	 * @param	(string) $url The URL of the page to load
-	 * @return		(string) $data The contents of the URL
+	 * @return	(string) $data The contents of the URL
 	 */
 	public function load($url)
 	{
@@ -77,7 +77,7 @@ class Scraper
 	 * The following function extracts the data between 2 tags
 	 *
 	 * @param	(string) $start The HTML tag to start, $end HTML tag to end, $from the HTML contents
-	 * @return		(string) $cut the extracted HTML contents
+	 * @return	(string) $cut the extracted HTML contents
 	 */	
 	public function cut($start, $end, $from)
 	{
@@ -95,7 +95,7 @@ class Scraper
 	 * The following function removes all HTML code from the contents
 	 *
 	 * @param	(string) $html The HTML contents to be stripped
-	 * @return		(string) $results The stripped text contents 
+	 * @return	(string) $results The stripped text contents 
 	 */
 	public function strip($html)
 	{
@@ -122,7 +122,7 @@ class Scraper
 	 * The following function escapes the given HTML
 	 *
 	 * @param	(string) $html The content to be escaped
-	 * @return		(string) Escaped HTML
+	 * @return	(string) Escaped HTML
 	 */
 	public function escape($html)
 	{
@@ -148,7 +148,7 @@ class Scraper
 	 * The following function unescapes the HTML content
 	 *
 	 * @param	(string) $html The escaped HTML contents
-	 * @return		(string) Unescaped HTML
+	 * @return	(string) Unescaped HTML
 	 */	
 	public function unescape($html)
 	{
@@ -175,7 +175,7 @@ class Scraper
 	 * The following function gets the URLs of CSS files from a page
 	 *
 	 * @param	(string) $url The URL of the page to get CSS from
-	 * @return		(array) $result The links to the CSS files
+	 * @return	(array) $result The links to the CSS files
 	 */	
 	public function externalcss($url)
 	{
@@ -193,7 +193,7 @@ class Scraper
 	 * The following function gets the URLs of JS files from a page
 	 *
 	 * @param	(string) $url The URL of the page to get JS from
-	 * @return		(array) $result The links to the JS files
+	 * @return	(array) $result The links to the JS files
 	 */
 	public function externaljs($url)
 	{
@@ -211,7 +211,7 @@ class Scraper
 	 * The following function replaces the given text with the replacement text
 	 *
 	 * @param	(string, array) $what The string/array to be replaced, $with The string/array to replace with, $from The HTML contents
-	 * @return		(string) The replaced HTML contents
+	 * @return	(string) The replaced HTML contents
 	 */
 	public function replace($what, $with, $from)
 	{
@@ -229,7 +229,7 @@ class Scraper
 	 * The following function parses then e XML into an object
 	 *
 	 * @param	(string) $url The URL of the XML content
-	 * @return		(array) The parsed XML array
+	 * @return	(array) The parsed XML array
 	 */
 	public function parseXML($url)
 	{
@@ -247,7 +247,7 @@ class Scraper
 	 * The following function generates a cache file and stores it
 	 *
 	 * @param	(string) $data The data to be cached, $key An unique identifier for the data
-	 * @return		(bool) Returns True if data is cached
+	 * @return	(bool) Returns True if data is cached
 	 */	
 	public function cache($data, $key)
 	{
@@ -287,7 +287,7 @@ class Scraper
 	 * The following function gets the cached content
 	 *
 	 * @param	(string) $key The unique key for the saved data
-	 * @return		(string) The cached content
+	 * @return	(string) The cached content
 	 */
 	public function getcache($key)
 	{
@@ -347,7 +347,7 @@ class Scraper
 	 * The following function outputs all the links found in the given text
 	 *
 	 * @param	(string) $text The HTML content to extract links from
-	 * @return		(array) $urls The list of URLS found
+	 * @return	(array) $urls The list of URLS found
 	 */
 	public function getURLs($text)
 	{
