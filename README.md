@@ -1,36 +1,40 @@
 PHP Scraper Class
 =======
 
-## DESCRIPTION
+## Description
 
 This class is a collection of helpful functions to help make data mining and scraping easier
 
-## INSTALLATION
+## Installation
 
 To Install the class, you simply need to add this code
 
 	<?php
 	
-		include "ScraperClass.php";
+		require("ScraperClass.php");
 	
 	?>
 
-## USAGE
+## Functions
 
 * Load
 * Cut
 * Strip HTML
 * more
 
+## TODO
 
-## EXAMPLES
+* Finish cutCeption
+* Add content type headers
+
+## Examples
 	
 1. Loading URL
 
 
 		<?php
 		
-			include "ScraperClass.php";
+			require("ScraperClass.php");
 		
 			$scraper = new Scraper();
 			$get = $scraper->load("http://yahoo.com/");

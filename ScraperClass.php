@@ -15,7 +15,7 @@ class Scraper
 {
 
 	public $dir = "./cache";	// cache directory
-	public $expiration = 60*60;	// cache expiration time in seconds
+	public $expiration = 3600;	// cache expiration time in seconds
 	
 	
 	/**
@@ -45,12 +45,12 @@ class Scraper
 		$url = $this->replace( array(' '), array('+'), $url );	// remove spaces
 		
 		// if file_get_contents exists use that
-		if( extension_loaded("file_get_contents") )
+		if( function_exists("file_get_contents"))
 		{
 			return file_get_contents($url);	// return the contents
 		}
 		// otherwise use curl
-		elseif ( extension_loaded("curl_init") )
+		elseif ( function_exists("curl_init") )
 		{
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -72,9 +72,16 @@ class Scraper
 		// otherwise simply read the file
 		else
 		{
-			$handle = fopen($url, "r+");	// simple read the file
+			$handle = fopen($url, "r");	// simple read the file
+			$cachefile = fopen($dir."/get/".md5(time()) , "w");
+			fwrite($cachefile, $handle);
+			fclose($cachefile);
 			
-			return $handle;	// output it
+			$get = fopen($cachefile, "r");
+			$data = fread($get);
+			fclose($get);
+			
+			return $data;	// output it
 		}
 	}
 
@@ -91,7 +98,7 @@ class Scraper
 	{
 		$cut =  explode($start, $from);		// cut from top
 		$cut =  explode($end, @$cut[1]);	// cut from bottom
-		$cut =  $cut[0];				// get the cropped part
+		$cut =  $cut[0];			// get the cropped part
 		
 		return $cut;	// output it
 	}
@@ -103,21 +110,79 @@ class Scraper
 	 * The following function cuts out multiple portions from the HTML content
 	 *
 	 * @param	(array) $start The HTML tag to start, $end HTML tag to end, $from the HTML contents
-	 * @return	(array) $cut the extracted HTML contents
+	 * @return	(array) $results the extracted HTML contents
 	 */	
 	public function cutMultiple($start, $end, $from)
 	{
-		$count = count($start);	// count instances
 		$results = array();	// init the output
+		$step1 = explode($start, $from);	// get the results
 		
 		// start ittering
-		for($i = 0; $i < $count; $i++)
+		for( $i = 1; $i < count($step1); $i++)
 		{
-			$results[] = $this->cut($start[$i], $end[$i], $from);	// append the cut
+			$outputs = explode($end, $step1[$i]);	// get final cut
+			$results[] = $outputs[0];	// append the cut
 		}
 		
 		return $results;	// output it
 	}
+	
+	
+	/**
+	 * Cut Within Content Function (cutCeption)
+	 *
+	 * The following function cuts out HTML in layered form from previously cut content
+	 *
+	 * @param	(array) $steps The HTML tag to start and end in key value form, $from the HTML contents
+	 * @return	(array) $results the extracted HTML contents
+	 */	
+	public function cutCeption($steps, $from)
+	{
+		$count = count($steps);	// count instances
+		$start = array_keys($steps);
+		$end = array_values($steps);
+		
+		if( count($start) > 1 )
+		{
+			$step1 = $this->cutMultiple($start[0], $end[0], $from);
+			$step2 = array();
+			$i = 1;
+			
+			// TODO
+			while( $i < ($count-1))
+			{
+				$next = $i+1;
+				
+				foreach($step1 as $each)
+				{
+					$step2[] = $this->cutMultiple($start[$next], $end[$next], $each);
+				}
+				
+				foreach($step2 as $next)
+				{
+					
+				}
+				
+				$i++;
+			}
+			
+			return $step2;
+			
+		}
+		else
+		{
+			$results = array();
+			
+			// itter once
+			foreach($steps as $key => $value)
+			{
+				$results[] = $this->cutMultiple($key, $value, $from);	// append single cut
+			}
+		
+			return $results;	// output cut	
+		}
+		
+	}	
 
 	
 	/**
@@ -132,6 +197,11 @@ class Scraper
 	 */
 	public function strip($html, $exceptions)
 	{
+		if( $exceptions == "")
+		{
+			$exceptions = "";
+		}
+		
 		// if not single
 		if( is_array($html) )
 		{
@@ -244,7 +314,7 @@ class Scraper
 	 * @param	(string) $url The URL of the page to get CSS from
 	 * @return	(array) $result The links to the CSS files
 	 */	
-	public function externalcss($url)
+	public function externalCSS($url)
 	{
 		$tmp = preg_match_all('/(href=")(.*\.css)"/i', $this->load($url), $patterns);
 		$result = array();
@@ -321,14 +391,14 @@ class Scraper
 	{
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
 		{  
-			return FALSE;  
+			return False;  
 		}  
 
 		$cache_path = md5($key);  
 
 		if ( !$fp = fopen($cache_path, 'wb'))  
 		{  
-			return FALSE;  
+			return False;  
 		}  
 
 		if (flock($fp, LOCK_EX))  
@@ -338,13 +408,13 @@ class Scraper
 		}  
 		else  
 		{  
-			return FALSE;  
+			return False;  
 		}  
 
 		fclose($fp);  
 		@chmod($cache_path, 0777);  
 
-		return TRUE;  
+		return True;  
 		
 	}
 	
@@ -361,14 +431,14 @@ class Scraper
 	{
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
 		{  
-			return FALSE;  
+			return False;  
 		}  
 
 		$cache_path = md5($key);  
 
 		if (!@file_exists($cache_path))  
 		{  
-			return FALSE;  
+			return False;  
 		}  
 
 		if (filemtime($cache_path) < (time() - $this->expiration))  
@@ -378,15 +448,15 @@ class Scraper
 			{  
 				unlink($cache_path);  
 				
-				return TRUE;  
+				return True;  
 			}  
 			
-			return FALSE;  
+			return False;  
 		}  
 
 		if (!$fp = @fopen($cache_path, 'rb'))  
 		{  
-			return FALSE;  
+			return False;  
 		}  
 
 		flock($fp, LOCK_SH);  
