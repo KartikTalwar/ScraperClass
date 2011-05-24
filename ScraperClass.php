@@ -47,6 +47,7 @@ class Scraper
 		// if file_get_contents exists use that
 		if( function_exists("file_get_contents"))
 		{
+			ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13");	// set user agent
 			return file_get_contents($url);	// return the contents
 		}
 		// otherwise use curl
@@ -55,7 +56,7 @@ class Scraper
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 			curl_setopt($ch, CURLOPT_URL, $url);	// get the url contents
-			curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13');	// set user agent
+			curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13");	// set user agent
 			curl_setopt($ch, CURLOPT_HEADER	, TRUE);
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 			curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
@@ -71,16 +72,15 @@ class Scraper
 		}
 		// otherwise simply read the file
 		else
-		{
-		
+		{		
 			$handle = fopen($url, "r");	// simple read the file
-			$filename = $this->dir."/get/".md5(time());
-			$cachefile = fopen($filename, "w");
-			fwrite($cachefile, $handle);
+			$filename = $this->dir."/get/".md5(time());	// set cache filename
+			$cachefile = fopen($filename, "w");	// open it
+			fwrite($cachefile, $handle);	// cache it
 			fclose($cachefile);
 			
-			$get = fopen($cachefile, "r");
-			$data = fread($get);
+			$get = fopen($cachefile, "r");	// retrieve it
+			$data = fread($get);	// load it
 			fclose($get);
 			
 			return $filename;	// output it 
@@ -317,17 +317,18 @@ class Scraper
 	{
 		$temp = array();
 		$results = array();
-
+		$get = $this->load($url);
+		
 		// Case 1
-		$m1 = preg_match_all('|<link(.*?)css(.*?)ref="(.*?)"(.*?)>|', $this->load($url), $patterns);
+		$m1 = preg_match_all('|<link(.*?)css(.*?)ref="(.*?)"(.*?)>|', $get, $patterns);
 		array_push($temp, $patterns[3]);
 		
 		// Case 2
-		$m2 = preg_match_all('|<link(.*?)ref="(.*?)"(.*?)css(.*?)>|', $this->load($url), $patterns);
+		$m2 = preg_match_all('|<link(.*?)ref="(.*?)"(.*?)css(.*?)>|', $get, $patterns);
 		array_push($temp, $patterns[2]);
 		
 		// Case 3
-		$m3 = preg_match_all('/(href=")(.*\.css)"/i', $this->load($url), $patterns);
+		$m3 = preg_match_all('/(href=")(.*\.css)"/i', $get, $patterns);
 		array_push($temp, $patterns[2]);
 		
 		// collect all results
@@ -362,11 +363,41 @@ class Scraper
 	 */
 	public function externalJS($url)
 	{
-		$tmp = preg_match_all('/(src=")(.*\.js)"/i', $this->load($url), $patterns);
-		$result = array();
-		array_push($result, $patterns[2]);
+		$temp = array();
+		$results = array();
+		$get = $this->load($url);
+
+		// Case 1
+		$m1 = preg_match_all('/(src=")(.*\.js)"/i', $get, $patterns);
+		@array_push($result, $patterns[2]);
 		
-		return $result;
+		// Case 2
+		$m1 = preg_match_all('|<script(.*?)javascript(.*?)rc="(.*?)"(.*?)>|', $get, $patterns);
+		array_push($temp, $patterns[3]);
+		
+		// Case 3
+		$m2 = preg_match_all('|<script(.*?)rc="(.*?)"(.*?)javascript(.*?)>|', $get, $patterns);
+		array_push($temp, $patterns[2]);
+		
+		// collect all results
+		foreach($temp as $result)
+		{
+			foreach($result as $js)
+			{
+				$results[] = $js;	// append results
+			}
+		}
+		
+		$temp = array_unique($results);	// sort for duplicates
+		$results = array();	// init again
+		
+		// start reading all results
+		foreach($temp as $unique)
+		{
+			$results[] = $this->getRealPath($url, $unique);	// get actual URL
+		}
+		
+		return $results;	// return JS URLs
 	}	
 
 	
@@ -417,18 +448,19 @@ class Scraper
 	 */
 	public function getURLs($text)
 	{
-		$pattern  = '#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#';
-		$match = preg_match_all($pattern, $text, $matches);
-		$results = $matches[0];
+		$pattern  = "#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#";	// RegEx for URLs
+		$match = preg_match_all($pattern, $text, $matches);	// find matched
+		$results = $matches[0];	// retrieve em
 		
-		$urls = array();
+		$urls = array();	// init results
 		
+		// start iterring
 		foreach($results as $url)
 		{
-			$urls[] = $url;
+			$urls[] = $url;	// append results
 		}
 		
-		return $urls;
+		return $urls;	// output it
 	}
 	
 	
@@ -528,8 +560,71 @@ class Scraper
 		
 		$url .= $path;	// make path
 		
-		return $url;
+		return $url;	// output url
 	}	
+
+
+	/**
+	 * HTTP Header Function
+	 *
+	 * The following function sets the HTTP headers to follow the defined status code
+	 *
+	 * @param	(string) $code The HTTP code to follow, $url The URL to redirect to
+	 * @return	(null) Sets the headers
+	 */	
+	public function HTTPCode($code, $url=NULL)
+	{
+		// Status codes
+		static $http = array (
+			       100 => "HTTP/1.1 100 Continue",
+			       101 => "HTTP/1.1 101 Switching Protocols",
+			       200 => "HTTP/1.1 200 OK",
+			       201 => "HTTP/1.1 201 Created",
+			       202 => "HTTP/1.1 202 Accepted",
+			       203 => "HTTP/1.1 203 Non-Authoritative Information",
+			       204 => "HTTP/1.1 204 No Content",
+			       205 => "HTTP/1.1 205 Reset Content",
+			       206 => "HTTP/1.1 206 Partial Content",
+			       300 => "HTTP/1.1 300 Multiple Choices",
+			       301 => "HTTP/1.1 301 Moved Permanently",
+			       302 => "HTTP/1.1 302 Found",
+			       303 => "HTTP/1.1 303 See Other",
+			       304 => "HTTP/1.1 304 Not Modified",
+			       305 => "HTTP/1.1 305 Use Proxy",
+			       307 => "HTTP/1.1 307 Temporary Redirect",
+			       400 => "HTTP/1.1 400 Bad Request",
+			       401 => "HTTP/1.1 401 Unauthorized",
+			       402 => "HTTP/1.1 402 Payment Required",
+			       403 => "HTTP/1.1 403 Forbidden",
+			       404 => "HTTP/1.1 404 Not Found",
+			       405 => "HTTP/1.1 405 Method Not Allowed",
+			       406 => "HTTP/1.1 406 Not Acceptable",
+			       407 => "HTTP/1.1 407 Proxy Authentication Required",
+			       408 => "HTTP/1.1 408 Request Time-out",
+			       409 => "HTTP/1.1 409 Conflict",
+			       410 => "HTTP/1.1 410 Gone",
+			       411 => "HTTP/1.1 411 Length Required",
+			       412 => "HTTP/1.1 412 Precondition Failed",
+			       413 => "HTTP/1.1 413 Request Entity Too Large",
+			       414 => "HTTP/1.1 414 Request-URI Too Large",
+			       415 => "HTTP/1.1 415 Unsupported Media Type",
+			       416 => "HTTP/1.1 416 Requested range not satisfiable",
+			       417 => "HTTP/1.1 417 Expectation Failed",
+			       500 => "HTTP/1.1 500 Internal Server Error",
+			       501 => "HTTP/1.1 501 Not Implemented",
+			       502 => "HTTP/1.1 502 Bad Gateway",
+			       503 => "HTTP/1.1 503 Service Unavailable",
+			       504 => "HTTP/1.1 504 Gateway Time-out"
+					);
+
+		header( $http[$code] ) ;	// status code
+	   
+		// if redirect required
+		if($url != "")
+		{
+			header ( "Location: $url" );	// redirect
+		}
+	}
 	
 	
 	/**
@@ -542,21 +637,24 @@ class Scraper
 	 */	
 	public function cache($data, $key)
 	{
+		// check if the directory is writable
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
 		{  
 			return False;  
 		}  
 
-		$cache_path = $this->dir."/get/".md5($key);  
+		$cache_path = $this->dir."/get/".md5($key);	// set the cache file
 
+		// make sure the file can be open
 		if ( !$fp = fopen($cache_path, 'wb'))  
 		{  
 			return False;  
 		}  
 
+		// lock the file's positions
 		if (flock($fp, LOCK_EX))  
 		{  
-			fwrite($fp, serialize($data));  
+			fwrite($fp, serialize($data));  // cache it
 			flock($fp, LOCK_UN);  
 		}  
 		else  
@@ -565,9 +663,9 @@ class Scraper
 		}  
 
 		fclose($fp);  
-		@chmod($cache_path, 0777);  
+		@chmod($cache_path, 0777);	// give it permissions
 
-		return True;  
+		return True;  // return the boolean output
 		
 	}
 	
@@ -582,53 +680,57 @@ class Scraper
 	 */
 	public function getCache($key)
 	{
+		// check if the directory is writable or not
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
 		{  
 			return False;  
 		}  
 
-		$cache_path = $this->dir."/get/".md5($key);  
+		$cache_path = $this->dir."/get/".md5($key);	// find the file
 
+		// if it doesnt exists, do nothing
 		if (!@file_exists($cache_path))  
 		{  
 			return False;  
 		}  
 
+		// if the file has expired
 		if (filemtime($cache_path) < (time() - $this->expiration))  
 		{  
-			
+			// and exists
 			if (file_exists($cache_path))  
 			{  
-				unlink($cache_path);  
+				unlink($cache_path);	// delete it
 				
 				return True;  
 			}  
 			
-			return False;  
+			return False;	
 		}  
 
+		// make sure it can be open
 		if (!$fp = @fopen($cache_path, 'rb'))  
 		{  
 			return False;  
 		}  
 
-		flock($fp, LOCK_SH);  
+		flock($fp, LOCK_SH);	// lock it
 
-		$cache = '';  
+		$cache = '';	// init cache request
 
-		if (filesize($cache_path) > 0)  
+		if (filesize($cache_path) > 0)	// if file is valid
 		{  
-			$cache = unserialize(fread($fp, filesize($cache_path)));  
+			$cache = unserialize(fread($fp, filesize($cache_path)));	// retrieve it
 		}  
 		else  
 		{  
-			$cache = NULL;  
+			$cache = NULL;	// do nothing
 		}  
 
-		flock($fp, LOCK_UN);  
+		flock($fp, LOCK_UN);
 		fclose($fp);  
 
-		return $cache;  	
+		return $cache;	// return the contents
 	}
 	
 	

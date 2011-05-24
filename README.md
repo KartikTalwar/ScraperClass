@@ -28,6 +28,7 @@ To Install the class, you simply need to add this code
 * `parseXML($url)`
 * `getURLs($html)`
 * `getRealPath($url)`
+* `HTTPCode($code, $url)`
 * `cache($data, $key)`
 * `getCache($key)`
 

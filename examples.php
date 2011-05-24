@@ -4,8 +4,8 @@
 require("ScraperClass.php");
 
 
-//$link = "http://www.kontain.com/";
-$link = "http://www.bulletin.uwaterloo.ca/";
+$link = "http://www.kontain.com/";
+//$link = "http://www.bulletin.uwaterloo.ca/";
 $cutarray = array('<div id="footer">' => '</body>', 'departmentaddress' => '</div>', '<p>' => '</p>');
 
 
@@ -35,7 +35,11 @@ $getcache = $scraper->getCache("blahblah123");
 
 $getrealpath = $scraper->getRealPath(array("$link"), array("../images/"));
 
-print_r($externalcss);
+$redirect = $scraper->HTTPCode(200);
+//$redirect = $scraper->HTTPCode(302, "http://www.google.com/ncr");
+
+
+print_r($externaljs);
 
 
 
