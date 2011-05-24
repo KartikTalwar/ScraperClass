@@ -40,7 +40,7 @@ To Install the class, you simply need to add this code
 
 ## Examples
 	
-1. **Loading a URL**
+1. **Loading a URL** :
 	The following method can get the contents of any page including pages with GET requests and parameters in the URLs.
 
 		<?php
@@ -54,4 +54,4 @@ To Install the class, you simply need to add this code
 		
 		?>
 
-1. ** More coming soon **
+1. **More coming soon**
