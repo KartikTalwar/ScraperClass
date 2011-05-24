@@ -4,6 +4,7 @@
 require("ScraperClass.php");
 
 
+//$link = "http://www.kontain.com/";
 $link = "http://www.bulletin.uwaterloo.ca/";
 $cutarray = array('<div id="footer">' => '</body>', 'departmentaddress' => '</div>', '<p>' => '</p>');
 
@@ -23,18 +24,18 @@ $escape = $scraper->escape($cut);
 
 $unescape = $scraper->unescape($escape);
 
-$externalcss = $scraper->externalcss($link);
+$externalcss = $scraper->externalCSS($link);
 
-$externaljs = $scraper->externaljs($link);
+$externaljs = $scraper->externalJS($link);
 
 $replace = $scraper->replace("pm", "PM", $load);
 
 $cache = $scraper->cache($load, "blahblah123");
-$getcache = $scraper->getcache("blahblah123");
+$getcache = $scraper->getCache("blahblah123");
 
+$getrealpath = $scraper->getRealPath(array("$link"), array("../images/"));
 
-
-print_r($load);
+print_r($externalcss);
 
 
 

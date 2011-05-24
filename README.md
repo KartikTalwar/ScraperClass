@@ -1,4 +1,4 @@
-PHP Scraper Class
+#PHP Scraper Class
 =======
 
 ## Description
@@ -11,20 +11,32 @@ To Install the class, you simply need to add this code
 
 	<?php
 	
-		require("ScraperClass.php");
+		require("ScraperClass.php");	// include class
 	
 	?>
 
 ## Functions
 
-* Load
-* Cut
-* Strip HTML
-* more
+* `**load**($url)`
+* `**cut**($start, $end, $from)`
+* `**cutMultiple**($start, $end, $from)`
+* `**strip**($html, $exceptions)`
+* `**escape**($html)`
+* `**unescape**($html)`
+* `**externalCSS**($url)`
+* `**externalJS**($url)`
+* `**replace**($what, $with, $from)`
+* `**parseXML**($url)`
+* `**getURLs**($html)`
+* `**getRealPath**($url)`
+* `**cache**($data, $key)`
+* `**getCache**($key)`
+
 
 ## TODO
 
 * Finish cutCeption
+* Make XML parser detect XML from URL
 * Add content type headers
 
 ## Examples
@@ -37,7 +49,7 @@ To Install the class, you simply need to add this code
 			require("ScraperClass.php");
 		
 			$scraper = new Scraper();
-			$get = $scraper->load("http://yahoo.com/");
+			$get = $scraper->load("http://www.yahoo.com/");
 		
 			echo $get;
 		
