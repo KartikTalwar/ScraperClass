@@ -1,5 +1,4 @@
 #PHP Scraper Class
-=======
 
 ## Description
 
@@ -17,20 +16,20 @@ To Install the class, you simply need to add this code
 
 ## Functions
 
-* `**load**($url)`
-* `**cut**($start, $end, $from)`
-* `**cutMultiple**($start, $end, $from)`
-* `**strip**($html, $exceptions)`
-* `**escape**($html)`
-* `**unescape**($html)`
-* `**externalCSS**($url)`
-* `**externalJS**($url)`
-* `**replace**($what, $with, $from)`
-* `**parseXML**($url)`
-* `**getURLs**($html)`
-* `**getRealPath**($url)`
-* `**cache**($data, $key)`
-* `**getCache**($key)`
+* **load**($url)
+* **cut**($start, $end, $from)
+* **cutMultiple**($start, $end, $from)
+* **strip**($html, $exceptions)
+* **escape**($html)
+* **unescape**($html)
+* **externalCSS**($url)
+* **externalJS**($url)
+* **replace**($what, $with, $from)
+* **parseXML**($url)
+* **getURLs**($html)
+* **getRealPath**($url)
+* **cache**($data, $key)
+* **getCache**($key)
 
 
 ## TODO
