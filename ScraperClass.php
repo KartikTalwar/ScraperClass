@@ -72,8 +72,10 @@ class Scraper
 		// otherwise simply read the file
 		else
 		{
+		
 			$handle = fopen($url, "r");	// simple read the file
-			$cachefile = fopen($dir."/get/".md5(time()) , "w");
+			$filename = $this->dir."/get/".md5(time());
+			$cachefile = fopen($filename, "w");
 			fwrite($cachefile, $handle);
 			fclose($cachefile);
 			
@@ -81,7 +83,7 @@ class Scraper
 			$data = fread($get);
 			fclose($get);
 			
-			return $data;	// output it
+			return $filename;	// output it 
 		}
 	}
 
@@ -117,7 +119,7 @@ class Scraper
 		$results = array();	// init the output
 		$step1 = explode($start, $from);	// get the results
 		
-		// start ittering
+		// start iterring
 		for( $i = 1; $i < count($step1); $i++)
 		{
 			$outputs = explode($end, $step1[$i]);	// get final cut
@@ -160,7 +162,7 @@ class Scraper
 				
 				foreach($step2 as $next)
 				{
-					
+					// TODO
 				}
 				
 				$i++;
@@ -173,7 +175,7 @@ class Scraper
 		{
 			$results = array();
 			
-			// itter once
+			// iter once
 			foreach($steps as $key => $value)
 			{
 				$results[] = $this->cutMultiple($key, $value, $from);	// append single cut
@@ -197,16 +199,13 @@ class Scraper
 	 */
 	public function strip($html, $exceptions)
 	{
-		if( $exceptions == "")
-		{
-			$exceptions = "";
-		}
+		if( $exceptions == "") { $exceptions = "";}	// set default exclusions
 		
 		// if not single
 		if( is_array($html) )
 		{
 			$results = array();	// init the results
-			// start ittering
+			// start iterring
 			foreach($html as $single)
 			{
 				// replace php and comments tags so they do not get stripped  			
@@ -316,11 +315,40 @@ class Scraper
 	 */	
 	public function externalCSS($url)
 	{
-		$tmp = preg_match_all('/(href=")(.*\.css)"/i', $this->load($url), $patterns);
-		$result = array();
-		array_push($result, $patterns[2]);
+		$temp = array();
+		$results = array();
+
+		// Case 1
+		$m1 = preg_match_all('|<link(.*?)css(.*?)ref="(.*?)"(.*?)>|', $this->load($url), $patterns);
+		array_push($temp, $patterns[3]);
 		
-		return $result;
+		// Case 2
+		$m2 = preg_match_all('|<link(.*?)ref="(.*?)"(.*?)css(.*?)>|', $this->load($url), $patterns);
+		array_push($temp, $patterns[2]);
+		
+		// Case 3
+		$m3 = preg_match_all('/(href=")(.*\.css)"/i', $this->load($url), $patterns);
+		array_push($temp, $patterns[2]);
+		
+		// collect all results
+		foreach($temp as $result)
+		{
+			foreach($result as $css)
+			{
+				$results[] = $css;	// append results
+			}
+		}
+		
+		$temp = array_unique($results);	// sort for duplicates
+		$results = array();	// init again
+		
+		// start reading all results
+		foreach($temp as $unique)
+		{
+			$results[] = $this->getRealPath($url, $unique);	// get actual URL
+		}
+		
+		return $results;	// return CSS URLs
 	}
 	
 	
@@ -332,7 +360,7 @@ class Scraper
 	 * @param	(string) $url The URL of the page to get JS from
 	 * @return	(array) $result The links to the JS files
 	 */
-	public function externaljs($url)
+	public function externalJS($url)
 	{
 		$tmp = preg_match_all('/(src=")(.*\.js)"/i', $this->load($url), $patterns);
 		$result = array();
@@ -378,7 +406,132 @@ class Scraper
 	
 	}	
 
+	
+	/**
+	 * Get URLs Function
+	 *
+	 * The following function outputs all the links found in the given text
+	 *
+	 * @param	(string) $text The HTML content to extract links from
+	 * @return	(array) $urls The list of URLs found
+	 */
+	public function getURLs($text)
+	{
+		$pattern  = '#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#';
+		$match = preg_match_all($pattern, $text, $matches);
+		$results = $matches[0];
+		
+		$urls = array();
+		
+		foreach($results as $url)
+		{
+			$urls[] = $url;
+		}
+		
+		return $urls;
+	}
+	
+	
+	/**
+	 * Get Real Path Function
+	 *
+	 * The following function outputs all the HTTP URL from an absolute path
+	 *
+	 * @param	(string) $iurl The HTTP URL of the webpage, $irelative The relative URL of the directory/file
+	 * @return	(array) $urls The list of URLs found
+	 */
+	public function getRealPath($iurl, $irelative)
+	{
+		// Validate conditions for recursion
+		if( $iurl[0] == "" && $irelative[0] = "" )
+		{
+			$url[0] = $iurl;	// make it an array
+			$relative[0] = $irelative;	// make it an array
+		}
+		// otherwise
+		else
+		{
+			$url = $iurl;	// keep the array
+			$relative = $irelative;	// keep the array
+		}
+		
+		// Insert Recursion Here
+			// Insert Recursion Here
+				// Insert Recursion Here
+		if( is_array($url) )
+		{
+			$results = array();	// init results
+			
+			for($i=0; $i < count($url); $i++ )
+			{
+				$results[] = $this->getRealPath($url[$i], $relative[$i]);	// Get relative URL
+			}
+			
+			return $results;	// output result
+		}
+		
+		
+		$p = parse_url($relative);	// parse the URL
+		
+		if( @$p["scheme"] ) { return $relative; }	// check if url is already present
+		
+		extract( parse_url($url) );	// Get the variables
+		$path = dirname($path); 	//  init dir
+	
+		// If we already have the answer
+		if($relative{0} == "/")
+		{
+			$cparts = array_filter(explode("/", $relative));
+		}
+		// otherwise
+		else 
+		{
+			// parse relative locations
+			$aparts = array_filter(explode("/", $path));
+			$rparts = array_filter(explode("/", $relative));
+			$cparts = array_merge($aparts, $rparts);
+			
+			// start making the URL
+			foreach($cparts as $i => $part) 
+			{
+				if($part == ".") 
+				{
+					$cparts[$i] = null;
+				}
+				
+				if($part == "..") 
+				{
+					$cparts[$i - 1] = null;
+					$cparts[$i] = null;
+				}
+			}
+			
+			$cparts = array_filter($cparts);
+		}
+		
+		$path = implode("/", $cparts);
+		$url = "";	// init the URL
+		
+		// output handling
+		if($scheme) { $url = "$scheme://"; }	// Get request protocol 
 
+		// output handling		
+		if(@$user)  
+		{
+			$url .= "$user";
+			if($pass) { $url .= ":$pass";	 } // if is post/ftp request
+			$url .= "@";
+		}
+		
+		// output handling
+		if($host) { $url .= "$host/"; }	// domain
+		
+		$url .= $path;	// make path
+		
+		return $url;
+	}	
+	
+	
 	/**
 	 * Generate Cache Function
 	 *
@@ -394,7 +547,7 @@ class Scraper
 			return False;  
 		}  
 
-		$cache_path = md5($key);  
+		$cache_path = $this->dir."/get/".md5($key);  
 
 		if ( !$fp = fopen($cache_path, 'wb'))  
 		{  
@@ -427,14 +580,14 @@ class Scraper
 	 * @param	(string) $key The unique key for the saved data
 	 * @return	(string) The cached content
 	 */
-	public function getcache($key)
+	public function getCache($key)
 	{
 		if ( !is_dir($this->dir) OR !is_writable($this->dir))  
 		{  
 			return False;  
 		}  
 
-		$cache_path = md5($key);  
+		$cache_path = $this->dir."/get/".md5($key);  
 
 		if (!@file_exists($cache_path))  
 		{  
@@ -478,31 +631,6 @@ class Scraper
 		return $cache;  	
 	}
 	
-	
-	/**
-	 * Get URLs Function
-	 *
-	 * The following function outputs all the links found in the given text
-	 *
-	 * @param	(string) $text The HTML content to extract links from
-	 * @return	(array) $urls The list of URLS found
-	 */
-	public function getURLs($text)
-	{
-		$pattern  = '#\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#';
-		$match = preg_match_all($pattern, $text, $matches);
-		$results = $matches[0];
-		
-		$urls = array();
-		
-		foreach($results as $url)
-		{
-			$urls[] = $url;
-		}
-		
-		return $urls;
-	}
-
 	
 }	// end class
 
