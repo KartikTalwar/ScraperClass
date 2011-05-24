@@ -16,20 +16,20 @@ To Install the class, you simply need to add this code
 
 ## Functions
 
-* **load**($url)
-* **cut**($start, $end, $from)
-* **cutMultiple**($start, $end, $from)
-* **strip**($html, $exceptions)
-* **escape**($html)
-* **unescape**($html)
-* **externalCSS**($url)
-* **externalJS**($url)
-* **replace**($what, $with, $from)
-* **parseXML**($url)
-* **getURLs**($html)
-* **getRealPath**($url)
-* **cache**($data, $key)
-* **getCache**($key)
+* `load($url)`
+* `cut($start, $end, $from)`
+* `cutMultiple($start, $end, $from)`
+* `strip($html, $exceptions)`
+* `escape($html)`
+* `unescape($html)`
+* `externalCSS($url)`
+* `externalJS($url)`
+* `replace($what, $with, $from)`
+* `parseXML($url)`
+* `getURLs($html)`
+* `getRealPath($url)`
+* `cache($data, $key)`
+* `getCache($key)`
 
 
 ## TODO
@@ -40,8 +40,8 @@ To Install the class, you simply need to add this code
 
 ## Examples
 	
-1. Loading URL
-
+1. **Loading a URL**
+	* The following method can get the contents of any page including pages with GET requests and parameters in the URLs.
 
 		<?php
 		
@@ -53,3 +53,5 @@ To Install the class, you simply need to add this code
 			echo $get;
 		
 		?>
+
+1. ** More coming soon **
