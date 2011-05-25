@@ -44,7 +44,9 @@ $parsexml = $scraper->parseXML("http://www.yoursite.com/sitemap.xml");
 $submitpost = $scraper->submitPOST($params, "http://www.yoursite.com/");
 $submitget = $scraper->submitGET($params, "http://www.yoursite.com/");
 
-print_r($submitget);
+$xpath = $scraper->xpath("/*/*", "http://www.yoursite.com/sitemap.xml");
+
+print_r($xpath);
 
 
 

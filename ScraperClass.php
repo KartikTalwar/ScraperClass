@@ -445,7 +445,33 @@ class Scraper
 	
 	}	
 	
-	
+
+	/**
+	 * XML X-Path Browser Function
+	 *
+	 * The following interprets the X-Path for the parsed XML file
+	 *
+	 * @param	(string) $path The xpath, $xml The URL of the XML file or the XML content 
+	 * @return	(array) The xpath array results
+	 */
+	public function xpath($path, $xml)
+	{
+		// if input is a URL
+		if( $this->isURL($xml) )
+		{
+			$xml = $this->load($xml);	// make it XML
+		}
+		
+		$get = $this->parseXML($xml);	// parse xml
+		
+		if( $path != "" )
+		{
+			$result = $get->xpath($path);	// parse xpath
+			
+			return $result;	// output xpath results
+		}
+	}
+
 	/**
 	 * Submit POST Request Function
 	 *
@@ -510,7 +536,7 @@ class Scraper
 		$check = parse_url($text);	// parse the given text
 		
 		// if its a URL
-		if( ($check["scheme"] == "http"|| $check["scheme"] == "https") && $check["host"] != "" )
+		if( (@$check["scheme"] == "http"|| @$check["scheme"] == "https") && @$check["host"] != "" )
 		{
 			return True;	// say yes
 		} 
@@ -650,7 +676,7 @@ class Scraper
 	 * The following function sets the HTTP headers to follow the defined status code
 	 *
 	 * @param	(string) $code The HTTP code to follow, $url The URL to redirect to
-	 * @return	(null) Sets the headers
+	 * @return	(void) Sets the headers
 	 */	
 	public function HTTPCode($code, $url=NULL)
 	{
