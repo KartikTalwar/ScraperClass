@@ -26,6 +26,9 @@ To Install the class, you simply need to add this code
 * `externalJS($url)`
 * `replace($what, $with, $from)`
 * `parseXML($url)`
+* `submitPOST($param, $url)`
+* `submitGET($param, $url)`
+* `isURL($text)`
 * `getURLs($html)`
 * `getRealPath($url)`
 * `HTTPCode($code, $url)`
@@ -36,7 +39,6 @@ To Install the class, you simply need to add this code
 ## TODO
 
 * Finish cutCeption
-* Make XML parser detect XML from URL
 * Add content type headers
 
 ## Examples

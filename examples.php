@@ -7,6 +7,7 @@ require("ScraperClass.php");
 $link = "http://www.kontain.com/";
 //$link = "http://www.bulletin.uwaterloo.ca/";
 $cutarray = array('<div id="footer">' => '</body>', 'departmentaddress' => '</div>', '<p>' => '</p>');
+$params = array("name1" => "val1", "name2" => "val2", "name3" => "val3" );
 
 
 $scraper = new Scraper;
@@ -40,7 +41,10 @@ $redirect = $scraper->HTTPCode(200);
 
 $parsexml = $scraper->parseXML("http://www.yoursite.com/sitemap.xml");
 
-print_r($parsexml);
+$submitpost = $scraper->submitPOST($params, "http://www.yoursite.com/");
+$submitget = $scraper->submitGET($params, "http://www.yoursite.com/");
+
+print_r($submitget);
 
 
 

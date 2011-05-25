@@ -14,7 +14,7 @@
 class Scraper
 {
 
-	public $dir = "./cache";	// cache directory
+	public $dir = "./cache/";	// cache directory with trailing slash
 	public $expiration = 3600;	// cache expiration time in seconds
 	
 	
@@ -61,8 +61,8 @@ class Scraper
 			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 			curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-			curl_setopt($ch, CURLOPT_COOKIEFILE, './cache/cookie.txt');	// set cookie file
-			curl_setopt($ch, CURLOPT_COOKIEJAR, './cache/cookie.txt');
+			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->dir."cookie.txt");	// set cookie file
+			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->dir."cookie.txt");
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
 			
 			$data = curl_exec($ch);	// execute curl request
@@ -444,7 +444,58 @@ class Scraper
 		}
 	
 	}	
+	
+	
+	/**
+	 * Submit POST Request Function
+	 *
+	 * The following submits parameters to a URL using POST method
+	 *
+	 * @param	(array, string) $param The parameters to submit in key-value form, $url The URL to submit to
+	 * @return	(string) $data Returns the content of the page after submiting the params
+	 */
+	public function submitPOST($param, $url)
+	{
+		$query = http_build_query($param);	// make the query
 
+		// Start posting
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_URL, $url);	// get the url contents
+		curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13");	// set user agent
+		curl_setopt($ch, CURLOPT_HEADER	, TRUE);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+		curl_setopt($ch,CURLOPT_POST, count($param));
+		curl_setopt($ch,CURLOPT_POSTFIELDS, $query);	// post data
+		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->dir."cookie.txt");	// set cookie file
+		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->dir."cookie.txt");
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
+		
+		$data = curl_exec($ch);	// execute curl request
+		curl_close($ch);		
+		
+		return $data;	// returns the HTML after posting
+	}
+	
+
+	/**
+	 * Submit GET Request Function
+	 *
+	 * The following submits parameters to a URL using GET method
+	 *
+	 * @param	(array, string) $param The parameters to submit in key-value form, $url The URL to submit to
+	 * @return	(string) $data Returns the content of the page after submiting the params
+	 */
+	public function submitGET($param, $url)
+	{
+		$query = $url."?".http_build_query($param);	// Build the URL
+		$data = $this->load($query);	// get contents
+		
+		return $data;	// output them
+	}
+	
 	
 	/**
 	 * URL Validator Function
