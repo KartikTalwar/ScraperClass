@@ -30,16 +30,17 @@ $externaljs = $scraper->externalJS($link);
 
 $replace = $scraper->replace("pm", "PM", $load);
 
-$cache = $scraper->cache($load, "blahblah123");
-$getcache = $scraper->getCache("blahblah123");
+//$cache = $scraper->cache($load, "blahblah123");
+//$getcache = $scraper->getCache("blahblah123");
 
 $getrealpath = $scraper->getRealPath(array("$link"), array("../images/"));
 
 $redirect = $scraper->HTTPCode(200);
 //$redirect = $scraper->HTTPCode(302, "http://www.google.com/ncr");
 
+$parsexml = $scraper->parseXML("http://www.yoursite.com/sitemap.xml");
 
-print_r($externaljs);
+print_r($parsexml);
 
 
 

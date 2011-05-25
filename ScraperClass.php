@@ -425,17 +425,47 @@ class Scraper
 	 *
 	 * The following function parses then e XML into an object
 	 *
-	 * @param	(string) $url The URL of the XML content
+	 * @param	(string) $url/$xml The URL of the XML content
 	 * @return	(array) The parsed XML array
 	 */
 	public function parseXML($url)
 	{
+		// if input is a URL
+		if( $this->isURL($url) )
+		{
+			$url = $this->load($url);	// make it XML
+		}
+		
 		if(function_exists('simplexml_load_string'))
 		{
-			return simplexml_load_string($url);
+			$xml = simplexml_load_string($url);	// Parse it
+			
+			return $xml;	// output it
 		}
 	
 	}	
+
+	
+	/**
+	 * URL Validator Function
+	 *
+	 * The following function checks if the given string is a url or not
+	 *
+	 * @param	(string) $text The URL or any other string
+	 * @return	(bool) Returns true if its a url
+	 */
+	public function isURL($text)
+	{
+		$check = parse_url($text);	// parse the given text
+		
+		// if its a URL
+		if( ($check["scheme"] == "http"|| $check["scheme"] == "https") && $check["host"] != "" )
+		{
+			return True;	// say yes
+		} 
+		
+		return False;
+	}
 
 	
 	/**
@@ -501,7 +531,6 @@ class Scraper
 			
 			return $results;	// output result
 		}
-		
 		
 		$p = parse_url($relative);	// parse the URL
 		
