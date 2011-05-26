@@ -25,6 +25,7 @@ To Install the class, you simply need to add this code
 * `externalCSS($url)`
 * `externalJS($url)`
 * `replace($what, $with, $from)`
+* `parseJSON($data)`
 * `parseXML($url)`
 * `xpath($path, $url)`
 * `submitPOST($param, $url)`

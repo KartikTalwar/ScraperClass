@@ -418,12 +418,38 @@ class Scraper
 		}
 	
 	}
+
+
+	/**
+	 * JSON Parser Function
+	 *
+	 * The following function parses the given JSON into an object
+	 *
+	 * @param	(string) $data The URL of the JSON content
+	 * @return	(array) The parsed JSON array
+	 */
+	public function parseJSON($data)
+	{
+		// if input is a URL
+		if( $this->isURL($data) )
+		{
+			$data = $this->load($data);	// make it JSON
+		}
+		
+		$get = preg_replace( "/,\s*([\]}])/m", "$1", utf8_encode($data) );	// minor error handling
+		
+		if(function_exists('json_decode'))
+		{	
+			return json_decode($get);	// output it
+		}
+	
+	}	
 	
 	
 	/**
 	 * XML Parser Function
 	 *
-	 * The following function parses then e XML into an object
+	 * The following function parses the given XML into an object
 	 *
 	 * @param	(string) $url/$xml The URL of the XML content
 	 * @return	(array) The parsed XML array
