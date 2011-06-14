@@ -50,7 +50,10 @@ $xpath = $scraper->xpath("/*/*", "http://www.yoursite.com/sitemap.xml");
 
 $redirects = $scraper->getRedirects("http://www.google.com/");
 
-print_r($redirects);
+$httpstatus = $scraper->getHTTPStatus("http://twitter.com/blah123fake");
+
+
+print_r($httpstatus);
 
 
 

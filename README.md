@@ -35,6 +35,7 @@ To Install the class, you simply need to add this code
 * `getRedirects($url)`
 * `getRealPath($url)`
 * `HTTPStatus($code, $url)`
+* `getHTTPStatus($url)`
 * `cache($data, $key)`
 * `getCache($key)`
 

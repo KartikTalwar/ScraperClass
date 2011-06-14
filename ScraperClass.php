@@ -836,6 +836,30 @@ class Scraper
 		}
 	}
 	
+
+	/**
+	 * Get HTTP Status Code Function
+	 *
+	 * The following function gets the HTTP Status Code for the given URL
+	 *
+	 * @param	(string) $url The URL of the webpage
+	 * @return	(int) $status The status code of the page
+	 */
+	public function getHTTPStatus($url)
+	{
+		$get = curl_init($url);	// init curl
+	
+		curl_setopt($get, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($get, CURLOPT_URL, $url);
+		
+		$data = curl_exec($get);	// execute request
+		$status = curl_getinfo($get, CURLINFO_HTTP_CODE);	// get status
+		
+		curl_close($get);	// close curl
+		
+		return $status;	// output it
+	}
+
 	
 	/**
 	 * Generate Cache Function
