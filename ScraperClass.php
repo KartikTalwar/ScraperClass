@@ -197,7 +197,7 @@ class Scraper
 	 * 			 within quotes without separation
 	 * @return	(string) $results The stripped text contents 
 	 */
-	public function strip($html, $exceptions)
+	public function strip($html, $exceptions=NULL)
 	{
 		if( $exceptions == "") { $exceptions = "";}	// set default exclusions
 		
@@ -321,15 +321,15 @@ class Scraper
 		
 		// Case 1
 		$m1 = preg_match_all('|<link(.*?)css(.*?)ref="(.*?)"(.*?)>|', $get, $patterns);
-		array_push($temp, $patterns[3]);
+		@array_push($temp, $patterns[3]);
 		
 		// Case 2
 		$m2 = preg_match_all('|<link(.*?)ref="(.*?)"(.*?)css(.*?)>|', $get, $patterns);
-		array_push($temp, $patterns[2]);
+		@array_push($temp, $patterns[2]);
 		
 		// Case 3
 		$m3 = preg_match_all('/(href=")(.*\.css)"/i', $get, $patterns);
-		array_push($temp, $patterns[2]);
+		@array_push($temp, $patterns[2]);
 		
 		// collect all results
 		foreach($temp as $result)
@@ -373,11 +373,11 @@ class Scraper
 		
 		// Case 2
 		$m1 = preg_match_all('|<script(.*?)javascript(.*?)rc="(.*?)"(.*?)>|', $get, $patterns);
-		array_push($temp, $patterns[3]);
+		@array_push($temp, $patterns[3]);
 		
 		// Case 3
 		$m2 = preg_match_all('|<script(.*?)rc="(.*?)"(.*?)javascript(.*?)>|', $get, $patterns);
-		array_push($temp, $patterns[2]);
+		@array_push($temp, $patterns[2]);
 		
 		// collect all results
 		foreach($temp as $result)
@@ -598,6 +598,84 @@ class Scraper
 	
 	
 	/**
+	 * Get All Redirects Function
+	 *
+	 * The following function outputs all (if any) HTTP redirects that the given url forwards to
+	 *
+	 * @param	(string) $url The URL of the page 
+	 * @return	(array) $urls The list of URLs found
+	 */
+	public function getRedirects($url)
+	{
+		$urlParts = @parse_url($url);	// parse url
+	
+		if (!$urlParts) { $redirected =  ""; }	// make sure its a URL
+		if (!isset($urlParts["host"])) { $redirected = ""; }	// can't process relative URLs
+		if (!isset($urlParts["path"])) { $urlParts["path"] = '/'; }	// set whatever you got!
+
+		$sock = fsockopen($urlParts["host"], ( isset($urlParts["port"]) ? (int)$urlParts["port"] : 80), $errno, $errstr, 30);	// open it up old style
+		
+		if (!$sock) { $redirected =  ""; }	// if cant open URL, die
+		
+		// Request for headers
+		$request = "HEAD " . $urlParts["path"] . (isset($urlParts["query"]) ? '?'.$urlParts["query"] : '') . " HTTP/1.1\r\n"; 
+		$request .= "Host: " . $urlParts["host"] . "\r\n"; 
+		$request .= "Connection: Close\r\n\r\n"; 
+		
+		// Init response
+		fwrite($sock, $request);
+		$response = "";
+		
+		// Start iterations 
+		while( !feof($sock) ) 
+		{
+			$response .= fread($sock, 8192);	// add to response
+		}
+		
+		fclose($sock);	// close connection
+
+		// Start checking for redirects
+		if ( preg_match('/^Location: (.+?)$/m', $response, $matches) )
+		{
+			if ( substr($matches[1], 0, 1) == "/" )
+			{
+				$redirected = $urlParts['scheme'] . "://" . $urlParts['host'] . trim($matches[1]);	// Make URL
+			}
+			else
+			{
+				$redirected = trim($matches[1]);	// Otherwise clean up
+			}
+		} 
+		else 
+		{
+			$redirected = "";	// die
+		}
+
+		// If there was a redirect
+		if( !empty($redirected) )
+		{
+			$urls = array();	// init result
+			
+			// Start checking
+			while ($newurl = $redirected)
+			{
+				if ( in_array($newurl, $urls))	// unless it already exists
+				{
+					break;	// do nothing
+				}
+				
+				$urls[] = $newurl;	// add it
+				$url = $newurl;	// itter to next check
+			}
+
+			return $urls;	// return results
+		}
+		
+		return array("$url");	// otherwsie return the given url
+	}	
+	
+	
+	/**
 	 * Get Real Path Function
 	 *
 	 * The following function outputs all the HTTP URL from an absolute path
@@ -697,14 +775,14 @@ class Scraper
 
 
 	/**
-	 * HTTP Header Function
+	 * HTTP Header Status Function
 	 *
 	 * The following function sets the HTTP headers to follow the defined status code
 	 *
 	 * @param	(string) $code The HTTP code to follow, $url The URL to redirect to
 	 * @return	(void) Sets the headers
 	 */	
-	public function HTTPCode($code, $url=NULL)
+	public function HTTPStatus($code, $url=NULL)
 	{
 		// Status codes
 		static $http = array (

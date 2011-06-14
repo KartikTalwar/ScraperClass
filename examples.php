@@ -36,8 +36,8 @@ $replace = $scraper->replace("pm", "PM", $load);
 
 $getrealpath = $scraper->getRealPath(array("$link"), array("../images/"));
 
-$redirect = $scraper->HTTPCode(200);
-//$redirect = $scraper->HTTPCode(302, "http://www.google.com/ncr");
+$redirect = $scraper->HTTPStatus(200);
+//$redirect = $scraper->HTTPStatus(302, "http://www.google.com/ncr");
 
 $parsejson = $scraper->parseJSON("http://www.reddit.com/.json");
 
@@ -48,7 +48,9 @@ $submitget = $scraper->submitGET($params, "http://www.yoursite.com/");
 
 $xpath = $scraper->xpath("/*/*", "http://www.yoursite.com/sitemap.xml");
 
-print_r($parsejson);
+$redirects = $scraper->getRedirects("http://www.google.com/");
+
+print_r($redirects);
 
 
 

@@ -32,8 +32,9 @@ To Install the class, you simply need to add this code
 * `submitGET($param, $url)`
 * `isURL($text)`
 * `getURLs($html)`
+* `getRedirects($url)`
 * `getRealPath($url)`
-* `HTTPCode($code, $url)`
+* `HTTPStatus($code, $url)`
 * `cache($data, $key)`
 * `getCache($key)`
 
