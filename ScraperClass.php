@@ -93,7 +93,9 @@ class Scraper
 	 *
 	 * The following function extracts the data between 2 tags
 	 *
-	 * @param	(string) $start The HTML tag to start, $end HTML tag to end, $from the HTML contents
+	 * @param	(string) $start The HTML tag to start
+	 * @param	(string) $end HTML tag to end
+	 * @param	(string) $from the HTML contents
 	 * @return	(string) $cut the extracted HTML contents
 	 */	
 	public function cut($start, $end, $from)
@@ -111,8 +113,10 @@ class Scraper
 	 *
 	 * The following function cuts out multiple portions from the HTML content
 	 *
-	 * @param	(array) $start The HTML tag to start, $end HTML tag to end, $from the HTML contents
-	 * @return	(array) $results the extracted HTML contents
+	 * @param	(string) $start The HTML tag to start
+	 * @param	(string) $end HTML tag to end
+	 * @param	(string) $from the HTML contents
+	 * @return	(string) $cut the extracted HTML contents
 	 */	
 	public function cutMultiple($start, $end, $from)
 	{
@@ -135,7 +139,8 @@ class Scraper
 	 *
 	 * The following function cuts out HTML in layered form from previously cut content
 	 *
-	 * @param	(array) $steps The HTML tag to start and end in key value form, $from the HTML contents
+	 * @param	(array) $steps The HTML tag to start and end in key value form
+	 * @param	(array) $from the HTML contents
 	 * @return	(array) $results the extracted HTML contents
 	 */	
 	public function cutCeption($steps, $from)
@@ -193,11 +198,11 @@ class Scraper
 	 * The following function removes all HTML code from the contents
 	 * and leaves the HTML and PHP comments alone
 	 *
-	 * @param	(string) $html The HTML contents to be stripped, $exceptions HTML tags to be excluded
-	 * 			 within quotes without separation
+	 * @param	(string) $html The HTML contents to be stripped
+	 * @param	(string) $exceptions HTML tags to be excluded within quotes without separation
 	 * @return	(string) $results The stripped text contents 
 	 */
-	public function strip($html, $exceptions=NULL)
+	public function strip($html, $exceptions = NULL)
 	{
 		if( $exceptions == "") { $exceptions = "";}	// set default exclusions
 		
@@ -406,8 +411,9 @@ class Scraper
 	 *
 	 * The following function replaces the given text with the replacement text
 	 *
-	 * @param	(string, array) $what The string/array to be replaced, $with The string/array to 
-	 * 			        replace with, $from The HTML contents
+	 * @param	(string, array) $what The string/array to be replaced
+	 * @param	(string, array) $with The string/array to replace with
+	 * @param	(string, array) $from The HTML contents
 	 * @return	(string) The replaced HTML contents
 	 */
 	public function replace($what, $with, $from)
@@ -477,7 +483,8 @@ class Scraper
 	 *
 	 * The following interprets the X-Path for the parsed XML file
 	 *
-	 * @param	(string) $path The xpath, $xml The URL of the XML file or the XML content 
+	 * @param	(string) $path The xpath
+	 * @param	(string) $xml The URL of the XML file or the XML content 
 	 * @return	(array) The xpath array results
 	 */
 	public function xpath($path, $xml)
@@ -503,7 +510,8 @@ class Scraper
 	 *
 	 * The following submits parameters to a URL using POST method
 	 *
-	 * @param	(array, string) $param The parameters to submit in key-value form, $url The URL to submit to
+	 * @param	(array, string) $param The parameters to submit in key-value form
+	 * @param	(array, string) $url The URL to submit to
 	 * @return	(string) $data Returns the content of the page after submiting the params
 	 */
 	public function submitPOST($param, $url)
@@ -537,7 +545,8 @@ class Scraper
 	 *
 	 * The following submits parameters to a URL using GET method
 	 *
-	 * @param	(array, string) $param The parameters to submit in key-value form, $url The URL to submit to
+	 * @param	(array, string) $param The parameters to submit in key-value form
+	 * @param	(array, string) $url The URL to submit to
 	 * @return	(string) $data Returns the content of the page after submiting the params
 	 */
 	public function submitGET($param, $url)
@@ -680,7 +689,8 @@ class Scraper
 	 *
 	 * The following function outputs all the HTTP URL from an absolute path
 	 *
-	 * @param	(string) $iurl The HTTP URL of the webpage, $irelative The relative URL of the directory/file
+	 * @param	(string) $iurl The HTTP URL of the webpage
+	 * @param	(string) $irelative The relative URL of the directory/file
 	 * @return	(array) $urls The list of URLs found
 	 */
 	public function getRealPath($iurl, $irelative)
@@ -779,7 +789,8 @@ class Scraper
 	 *
 	 * The following function sets the HTTP headers to follow the defined status code
 	 *
-	 * @param	(string) $code The HTTP code to follow, $url The URL to redirect to
+	 * @param	(string) $code The HTTP code to follow
+	 * @param	(string) $url The URL to redirect to
 	 * @return	(void) Sets the headers
 	 */	
 	public function HTTPStatus($code, $url=NULL)
@@ -866,7 +877,8 @@ class Scraper
 	 *
 	 * The following function generates a cache file and stores it
 	 *
-	 * @param	(string) $data The data to be cached, $key An unique identifier for the data
+	 * @param	(string) $data The data to be cached
+	 * @param	(string) $key An unique identifier for the data
 	 * @return	(bool) Returns True if data is cached
 	 */	
 	public function cache($data, $key)
