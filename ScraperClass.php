@@ -38,20 +38,21 @@ class Scraper
 	 * The following function gets the contents of the webpage
 	 *
 	 * @param	(string) $url The URL of the page to load
+	 * @param	(int) $method 1 for Curl
 	 * @return	(string) $data The contents of the URL
 	 */
-	public function load($url)
+	public function load($url, $method = NULL)
 	{
 		$url = $this->replace( array(' '), array('+'), $url );	// remove spaces
 		
 		// if file_get_contents exists use that
-		if( function_exists("file_get_contents"))
+		if( function_exists("file_get_contents") && $method !== 1)
 		{
 			ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13");	// set user agent
 			return file_get_contents($url);	// return the contents
 		}
 		// otherwise use curl
-		elseif ( function_exists("curl_init") )
+		elseif ( function_exists("curl_init") && $method == 1)
 		{
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
