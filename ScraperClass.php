@@ -528,8 +528,8 @@ class Scraper
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_MAXREDIRS, 5);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-		curl_setopt($ch,CURLOPT_POST, count($param));
-		curl_setopt($ch,CURLOPT_POSTFIELDS, $query);	// post data
+		curl_setopt($ch, CURLOPT_POST, count($param));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $query);	// post data
 		curl_setopt($ch, CURLOPT_COOKIEFILE, $this->dir."cookie.txt");	// set cookie file
 		curl_setopt($ch, CURLOPT_COOKIEJAR, $this->dir."cookie.txt");
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
@@ -890,7 +890,7 @@ class Scraper
 			return False;  
 		}  
 
-		$cache_path = $this->dir."/get/".md5($key);	// set the cache file
+		$cache_path = $this->dir."/".md5($key);	// set the cache file
 
 		// make sure the file can be open
 		if ( !$fp = fopen($cache_path, 'wb'))  
@@ -933,7 +933,7 @@ class Scraper
 			return False;  
 		}  
 
-		$cache_path = $this->dir."/get/".md5($key);	// find the file
+		$cache_path = $this->dir."/".md5($key);	// find the file
 
 		// if it doesnt exists, do nothing
 		if (!@file_exists($cache_path))  
