@@ -266,9 +266,9 @@ class Scraper
 		{
 			$results = array();
 			// start ittering
-			foreach($html as $entry)
+			foreach($html as $key => $value)
 			{
-				$results[] = htmlentities($entry);	// append escaped string
+				$results[$key] = htmlentities($value);	// append escaped string
 			}
 			
 			return $results;	// output it
