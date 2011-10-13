@@ -46,7 +46,7 @@ class Scraper
 		$url = $this->replace( array(' '), array('+'), $url );	// remove spaces
 		
 		// if file_get_contents exists use that
-		if( function_exists("file_get_contents") && $method !== 1)
+		if( function_exists("file_get_contents") && $method != 1)
 		{
 			ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/11.0.696 Safari/525.13");	// set user agent
 			return file_get_contents($url);	// return the contents
