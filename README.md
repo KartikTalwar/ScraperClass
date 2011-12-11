@@ -8,11 +8,13 @@ This class is a collection of helpful functions to help make data mining and scr
 
 To Install the class, you simply need to add this code
 
-	<?php
-	
-		require("ScraperClass.php");	// include class
-	
-	?>
+```php
+<?php
+
+	require("ScraperClass.php");	// include class
+
+?>
+```
 
 ## Functions
 
@@ -50,15 +52,17 @@ To Install the class, you simply need to add this code
 1. **Loading a URL** :
 	The following method can get the contents of any page including pages with GET requests and parameters in the URLs.
 
-		<?php
-		
-			require("ScraperClass.php");
-		
-			$scraper = new Scraper();
-			$get = $scraper->load("http://www.yahoo.com/");
-		
-			echo $get;
-		
-		?>
+	```php
+	<?php
+	
+		require("ScraperClass.php");
+	
+		$scraper = new Scraper();
+		$get = $scraper->load("http://www.yahoo.com/");
+	
+		echo $get;
+	
+	?>
+	```
 
 1. **More coming soon**
