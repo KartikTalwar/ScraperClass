@@ -7,9 +7,9 @@
  * mining and screen scraping.
  *
  * @author     	Kartik Talwar
- * @version    	1.0
+ * @version    	1.2
  * @example	./examples.php
- * @link	http://github.com/kartiktalwar/Scraper-Class
+ * @link	http://github.com/KartikTalwar/Scraper-Class
  */
 class Scraper
 {
@@ -64,7 +64,9 @@ class Scraper
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $this->dir."cookie.txt");	// set cookie file
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $this->dir."cookie.txt");
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0); 
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 5);
 			
 			$data = curl_exec($ch);	// execute curl request
 			curl_close($ch);
@@ -214,18 +216,10 @@ class Scraper
 			// start iterring
 			foreach($html as $single)
 			{
-				// replace php and comments tags so they do not get stripped  			
-				$single = preg_replace("@<\?@", "#?#", $single);
-				$single = preg_replace("@<!--@", "#!--#", $single);
-
 				// strip tags normally
 				# $single = preg_replace("/<[^>]*>/", "", $single);	// take care of double quotes
 				$single = strip_tags($single, $exceptions);
-
-				// return php and comments tags to their origial form
-				$single = preg_replace("@#\?#@", "<?", $single);
-				$single = preg_replace("@#!--#@", "<!--", $single);
-				
+					
 				$results[] = $single;	// append the results	
 			}
 			
@@ -234,18 +228,10 @@ class Scraper
 		// otherwise
 		else
 		{
-			// replace php and comments tags so they do not get stripped  
-			$html = preg_replace("@<\?@", "#?#", $html);
-			$html = preg_replace("@<!--@", "#!--#", $html);
-
 			// strip tags normally
 			# $single = preg_replace("/<[^>]*>/", "", $single);	// take care of double quotes
 			$html = strip_tags($html, $exceptions);
-
-			// return php and comments tags to their origial form
-			$html = preg_replace("@#\?#@", "<?", $html);
-			$html = preg_replace("@#!--#@", "<!--", $html);
-			
+	
 			return $html;	// return stripped single
 		}
 	}
@@ -257,9 +243,10 @@ class Scraper
 	 * The following function escapes the given HTML
 	 *
 	 * @param	(string) $html The content to be escaped
+	 * @param	(bool) $sql If escaping for MySQL
 	 * @return	(string) Escaped HTML
 	 */
-	public function escape($html)
+	public function escape($html, $sql = False)
 	{
 		// if multiple strings
 		if( is_array($html) )
@@ -268,7 +255,14 @@ class Scraper
 			// start ittering
 			foreach($html as $key => $value)
 			{
-				$results[$key] = htmlentities($value);	// append escaped string
+				if(!$sql)
+				{
+					$results[$key] = str_replace(array("&amp;", "&", '"', "'", "<", ">"), array("&", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;"), $value);	// append escaped string
+				}
+				else
+				{
+					$results[$key] = str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $input);	// append sql escaped string
+				}
 			}
 			
 			return $results;	// output it
@@ -276,7 +270,14 @@ class Scraper
 		// otherwise
 		else
 		{
-			return htmlentities($html);	// escape it
+			if(!$sql)
+			{
+				return str_replace(array("&amp;", "&", '"', "'", "<", ">"), array("&", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;"), $html);	// escape it
+			}
+			else
+			{
+				return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), $html);	// sql escape it
+			}
 		}
 	}
 
@@ -287,9 +288,10 @@ class Scraper
 	 * The following function unescapes the HTML content
 	 *
 	 * @param	(string) $html The escaped HTML contents
+	 * @param	(bool) $sql If unescaping for MySQL	 
 	 * @return	(string) Unescaped HTML
 	 */	
-	public function unescape($html)
+	public function unescape($html, $sql = False)
 	{
 		// if multiple strings
 		if( is_array($html) )
@@ -298,7 +300,14 @@ class Scraper
 			// start ittering
 			foreach($html as $key => $value)
 			{
-				$results[$key] = html_entity_decode($value);	// append unescaped string
+				if(!$sql)
+				{
+					$results[$key] = str_replace(array("&", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;"), array("&amp;", "&", '"', "'", "<", ">"), $value);	// append escaped string
+				}
+				else
+				{
+					$results[$key] = str_replace(array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), $input);	// append sql escaped string
+				}
 			}
 			
 			return $results;	// output it
@@ -306,7 +315,14 @@ class Scraper
 		// otherwise
 		else
 		{
-			return html_entity_decode($html);	// unescape it
+			if(!$sql)
+			{
+				return str_replace(array("&", "&amp;", "&quot;", "&apos;", "&lt;", "&gt;"), array("&amp;", "&", '"', "'", "<", ">"), $html);	// escape it
+			}
+			else
+			{
+				return str_replace(array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), $html);	// sql escape it
+			}
 		}
 	}
 	
@@ -608,6 +624,122 @@ class Scraper
 	
 	
 	/**
+	 * Sort function
+	 *
+	 * The following function sorts an array using AlphaNum Sort
+	 *
+	 * @param	(array) $array The array to be sorted
+	 * @return	(array) $sorted The sorted array
+	 */
+	public function sort($array)
+	{
+		if(is_array($array))
+		{
+			return sort($array, SORT_STRING);	// output sorted
+		}
+		
+		return $array;
+	}
+	
+	
+	/**
+	 * Parse CSV function
+	 *
+	 * The following function converts CSV input into an array
+	 *
+	 * @param	(array) $array The array to be sorted
+	 * @return	(array) $sorted The sorted array
+	 */
+	public function parseCSV($data)
+	{
+		if( $this->isURL($data) )
+		{
+			$string = $this->load($data);	// get contents
+		}
+		else
+		{
+			$string = $data;
+		}
+		
+		$separatorChar = ','; 
+		$enclosureChar = '"'; 
+		$newlineChar = "\n"
+		
+		$array = array();
+		$size = strlen($string);
+		$columnIndex = 0;
+		$rowIndex = 0;
+		$fieldValue = "";
+		$isEnclosured = False;
+
+		for($i=0; $i<$size;$i++) 
+		{
+			$char = $string{$i};
+			$addChar = "";
+
+			if($isEnclosured) 
+			{
+				if($char == $enclosureChar) 
+				{
+					if($i+1<$size && $string{$i+1} == $enclosureChar)
+					{
+						$addChar = $char;
+						$i++; 
+					}
+					else
+					{
+						$isEnclosured = false;
+					}
+				}
+				else 
+				{
+					$addChar=$char;
+				}
+			}
+			else 
+			{
+				if($char==$enclosureChar) 
+				{
+					$isEnclosured = true;
+				}
+				else 
+				{
+					if($char==$separatorChar) 
+					{
+						$array[$rowIndex][$columnIndex] = $fieldValue;
+						$fieldValue = "";
+						$columnIndex++;
+					}
+					elseif($char==$newlineChar) 
+					{
+						$array[$rowIndex][$columnIndex] = $fieldValue;
+						$fieldValue="";
+						$columnIndex=0;
+						$rowIndex++;
+					}
+					else 
+					{
+						$addChar=$char;
+					}
+				}
+			}
+
+			if($addChar != "")
+			{
+				$fieldValue.=$addChar;
+			}
+		}
+
+		if($fieldValue) 
+		{
+			$array[$rowIndex][$columnIndex] = $fieldValue;
+		}
+
+		return $array;
+	}		
+	
+	
+	/**
 	 * Get All Redirects Function
 	 *
 	 * The following function outputs all (if any) HTTP redirects that the given url forwards to
@@ -837,7 +969,7 @@ class Scraper
 			       502 => "HTTP/1.1 502 Bad Gateway",
 			       503 => "HTTP/1.1 503 Service Unavailable",
 			       504 => "HTTP/1.1 504 Gateway Time-out"
-					);
+				     );
 
 		header( $http[$code] ) ;	// status code
 	   
@@ -949,7 +1081,7 @@ class Scraper
 			{  
 				unlink($cache_path);	// delete it
 				
-				return True;  
+				return False;  
 			}  
 			
 			return False;	
