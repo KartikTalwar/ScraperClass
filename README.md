@@ -46,6 +46,10 @@ To Install the class, you simply need to add this code
 
 * Finish cutCeption
 * Add content type headers
+* Submit Forms
+* DOM array parsing
+* Add parsers (csv, rss, etc, json)
+* Load integer based "product URL's" `http://....com/?a=foo&q=bar&id=1325`
 
 ## Examples
 	
@@ -65,4 +69,4 @@ To Install the class, you simply need to add this code
 	?>
 	```
 
-1. **More coming soon**
+2. **More coming soon**
