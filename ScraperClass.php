@@ -228,11 +228,7 @@ class Scraper
 		// otherwise
 		else
 		{
-			// strip tags normally
-			# $single = preg_replace("/<[^>]*>/", "", $single);	// take care of double quotes
-			$html = strip_tags($html, $exceptions);
-	
-			return $html;	// return stripped single
+			return strip_tags($html, $exceptions);	// return stripped single
 		}
 	}
 
@@ -493,6 +489,103 @@ class Scraper
 		}
 	
 	}	
+
+
+	/**
+	 * Parse CSV function
+	 *
+	 * The following function converts CSV input into an array
+	 *
+	 * @param	(array) $array The array to be sorted
+	 * @return	(array) $sorted The sorted array
+	 */
+	public function parseCSV($data)
+	{
+		if( $this->isURL($data) )
+		{
+			$string = $this->load($data);	// get contents
+		}
+		else
+		{
+			$string = $data;
+		}
+		
+		$separatorChar = ','; 
+		$enclosureChar = '"'; 
+		$newlineChar = "\n"
+		
+		$array = array();
+		$size = strlen($string);
+		$columnIndex = 0;
+		$rowIndex = 0;
+		$fieldValue = "";
+		$isEnclosured = False;
+
+		for($i=0; $i<$size; $i++) 
+		{
+			$char = $string{$i};
+			$addChar = "";
+
+			if($isEnclosured) 
+			{
+				if($char == $enclosureChar) 
+				{
+					if($i+1 < $size && $string{$i+1} == $enclosureChar)
+					{
+						$addChar = $char;
+						$i++; 
+					}
+					else
+					{
+						$isEnclosured = false;
+					}
+				}
+				else 
+				{
+					$addChar = $char;
+				}
+			}
+			else 
+			{
+				if($char == $enclosureChar) 
+				{
+					$isEnclosured = true;
+				}
+				else 
+				{
+					if($char == $separatorChar) 
+					{
+						$array[$rowIndex][$columnIndex] = $fieldValue;
+						$fieldValue = "";
+						$columnIndex++;
+					}
+					elseif($char == $newlineChar) 
+					{
+						$array[$rowIndex][$columnIndex] = $fieldValue;
+						$fieldValue = "";
+						$columnIndex = 0;
+						$rowIndex++;
+					}
+					else 
+					{
+						$addChar = $char;
+					}
+				}
+			}
+
+			if($addChar != "")
+			{
+				$fieldValue .= $addChar;
+			}
+		}
+
+		if($fieldValue) 
+		{
+			$array[$rowIndex][$columnIndex] = $fieldValue;
+		}
+
+		return $array;
+	}
 	
 
 	/**
@@ -638,103 +731,6 @@ class Scraper
 			return sort($array, SORT_STRING);	// output sorted
 		}
 		
-		return $array;
-	}
-	
-	
-	/**
-	 * Parse CSV function
-	 *
-	 * The following function converts CSV input into an array
-	 *
-	 * @param	(array) $array The array to be sorted
-	 * @return	(array) $sorted The sorted array
-	 */
-	public function parseCSV($data)
-	{
-		if( $this->isURL($data) )
-		{
-			$string = $this->load($data);	// get contents
-		}
-		else
-		{
-			$string = $data;
-		}
-		
-		$separatorChar = ','; 
-		$enclosureChar = '"'; 
-		$newlineChar = "\n"
-		
-		$array = array();
-		$size = strlen($string);
-		$columnIndex = 0;
-		$rowIndex = 0;
-		$fieldValue = "";
-		$isEnclosured = False;
-
-		for($i=0; $i<$size;$i++) 
-		{
-			$char = $string{$i};
-			$addChar = "";
-
-			if($isEnclosured) 
-			{
-				if($char == $enclosureChar) 
-				{
-					if($i+1<$size && $string{$i+1} == $enclosureChar)
-					{
-						$addChar = $char;
-						$i++; 
-					}
-					else
-					{
-						$isEnclosured = false;
-					}
-				}
-				else 
-				{
-					$addChar=$char;
-				}
-			}
-			else 
-			{
-				if($char==$enclosureChar) 
-				{
-					$isEnclosured = true;
-				}
-				else 
-				{
-					if($char==$separatorChar) 
-					{
-						$array[$rowIndex][$columnIndex] = $fieldValue;
-						$fieldValue = "";
-						$columnIndex++;
-					}
-					elseif($char==$newlineChar) 
-					{
-						$array[$rowIndex][$columnIndex] = $fieldValue;
-						$fieldValue="";
-						$columnIndex=0;
-						$rowIndex++;
-					}
-					else 
-					{
-						$addChar=$char;
-					}
-				}
-			}
-
-			if($addChar != "")
-			{
-				$fieldValue.=$addChar;
-			}
-		}
-
-		if($fieldValue) 
-		{
-			$array[$rowIndex][$columnIndex] = $fieldValue;
-		}
-
 		return $array;
 	}		
 	
