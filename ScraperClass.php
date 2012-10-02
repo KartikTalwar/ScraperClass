@@ -512,7 +512,7 @@ class Scraper
 		
 		$separatorChar = ','; 
 		$enclosureChar = '"'; 
-		$newlineChar = "\n"
+		$newlineChar = "\n";
 		
 		$array = array();
 		$size = strlen($string);
